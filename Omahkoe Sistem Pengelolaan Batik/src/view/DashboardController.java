@@ -15,6 +15,7 @@ import java.util.Optional;
 
 public class DashboardController {
 
+    // ==================== SUPPLIER ====================
     @FXML private TextField tfNamaSupplier;
     @FXML private TextField tfTeleponSupplier;
     @FXML private TextField tfAlamatSupplier;
@@ -25,6 +26,7 @@ public class DashboardController {
     @FXML private TableColumn<Supplier, String> colSupplierAlamat;
     @FXML private Label lblPesanSupplier;
 
+    // ==================== BAJU ====================
     @FXML private TextField tfNamaBaju;
     @FXML private TextField tfHargaBaju;
     @FXML private TextField tfStokBaju;
@@ -32,7 +34,6 @@ public class DashboardController {
     @FXML private ComboBox<String> cbUkuranBaju;
     @FXML private ComboBox<String> cbKategoriBaju;
     @FXML private TextField tfIdSupplierBaju;
-    @FXML private TextField tfTambahStokBaju;
     @FXML private TableView<Baju> tableBaju;
     @FXML private TableColumn<Baju, String> colBajuNama;
     @FXML private TableColumn<Baju, Double> colBajuHarga;
@@ -43,22 +44,22 @@ public class DashboardController {
     @FXML private TableColumn<Baju, String> colBajuSupplier;
     @FXML private Label lblPesanBaju;
 
+    // ==================== CELANA (DENGAN BAHAN) ====================
     @FXML private TextField tfNamaCelana;
     @FXML private TextField tfHargaCelana;
     @FXML private TextField tfStokCelana;
     @FXML private TextField tfModelCelana;
     @FXML private ComboBox<String> cbUkuranCelana;
-    @FXML private TextField tfBahanCelana;
+    @FXML private TextField tfBahanCelana;          // ← BAHAN ADA
     @FXML private ComboBox<String> cbKategoriCelana;
     @FXML private TextField tfIdSupplierCelana;
-    @FXML private TextField tfTambahStokCelana;
     @FXML private TableView<Celana> tableCelana;
     @FXML private TableColumn<Celana, String> colCelanaNama;
     @FXML private TableColumn<Celana, Double> colCelanaHarga;
     @FXML private TableColumn<Celana, Integer> colCelanaStok;
     @FXML private TableColumn<Celana, String> colCelanaModel;
     @FXML private TableColumn<Celana, String> colCelanaUkuran;
-    @FXML private TableColumn<Celana, String> colCelanaBahan;
+    @FXML private TableColumn<Celana, String> colCelanaBahan;   // ← BAHAN ADA
     @FXML private TableColumn<Celana, String> colCelanaKategori;
     @FXML private TableColumn<Celana, String> colCelanaSupplier;
     @FXML private Label lblPesanCelana;
@@ -111,7 +112,7 @@ public class DashboardController {
         colBajuUkuran.setCellValueFactory(new PropertyValueFactory<>("ukuran"));
 
         colBajuHarga.setCellValueFactory(new PropertyValueFactory<>("harga"));
-        colBajuHarga.setCellFactory(col -> new TableCell<>() {
+        colBajuHarga.setCellFactory(col -> new TableCell<Baju, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
@@ -119,7 +120,7 @@ public class DashboardController {
             }
         });
 
-        colBajuKategori.setCellFactory(col -> new TableCell<>() {
+        colBajuKategori.setCellFactory(col -> new TableCell<Baju, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -133,7 +134,7 @@ public class DashboardController {
         });
         colBajuKategori.setCellValueFactory(new PropertyValueFactory<>("namaProduk"));
 
-        colBajuSupplier.setCellFactory(col -> new TableCell<>() {
+        colBajuSupplier.setCellFactory(col -> new TableCell<Baju, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
@@ -153,9 +154,10 @@ public class DashboardController {
         colCelanaStok.setCellValueFactory(new PropertyValueFactory<>("stok"));
         colCelanaModel.setCellValueFactory(new PropertyValueFactory<>("model"));
         colCelanaUkuran.setCellValueFactory(new PropertyValueFactory<>("ukuran"));
+        colCelanaBahan.setCellValueFactory(new PropertyValueFactory<>("bahan"));  // ← BAHAN ADA
 
         colCelanaHarga.setCellValueFactory(new PropertyValueFactory<>("harga"));
-        colCelanaHarga.setCellFactory(col -> new TableCell<>() {
+        colCelanaHarga.setCellFactory(col -> new TableCell<Celana, Double>() {
             @Override
             protected void updateItem(Double item, boolean empty) {
                 super.updateItem(item, empty);
@@ -232,7 +234,7 @@ public class DashboardController {
                 tfStokCelana.setText(String.valueOf(c.getStok()));
                 tfModelCelana.setText(c.getModel());
                 cbUkuranCelana.setValue(c.getUkuran());
-                tfBahanCelana.setText(c.getBahan());
+                tfBahanCelana.setText(c.getBahan());  // ← BAHAN ADA
                 cbKategoriCelana.setValue(c.getKategori().getLabel());
                 tfIdSupplierCelana.setText(String.valueOf(c.getSupplier().getId()));
                 lblPesanCelana.setText("");
@@ -278,6 +280,7 @@ public class DashboardController {
         }
     }
 
+    // ==================== SUPPLIER HANDLERS ====================
     @FXML private void handleTambahSupplier() {
         String nama = tfNamaSupplier.getText();
         String telepon = tfTeleponSupplier.getText();
@@ -367,6 +370,7 @@ public class DashboardController {
         lblPesanSupplier.setText("");
     }
 
+    // ==================== BAJU HANDLERS ====================
     @FXML private void handleTambahBaju() {
         String nama = tfNamaBaju.getText();
         if (nama.trim().isEmpty()) {
@@ -479,52 +483,37 @@ public class DashboardController {
         }
     }
 
-    @FXML private void handleTambahStokBaju() {
-        if (selectedBajuNama == null) {
-            showAlert("Peringatan", "Pilih Baju", "Pilih baju dari tabel terlebih dahulu!", Alert.AlertType.WARNING);
-            return;
-        }
-        String jumlahStr = tfTambahStokBaju.getText();
-        if (jumlahStr.trim().isEmpty()) {
-            showAlert("Peringatan", "Jumlah Kosong", "[!] Masukkan jumlah tambahan stok!", Alert.AlertType.WARNING);
-            return;
-        }
-
-        String hasil = bajuService.tambahStok(selectedBajuNama, jumlahStr);
-        setPesan(lblPesanBaju, hasil);
-
-        if (hasil.startsWith("[v]")) {
-            showAlert("Sukses", "Stok Ditambah", hasil, Alert.AlertType.INFORMATION);
-            refreshTableBaju();
-            tfTambahStokBaju.clear();
-        } else {
-            showAlert("Error", "Gagal Tambah Stok", hasil, Alert.AlertType.ERROR);
-        }
-    }
-
     @FXML private void handleClearBaju() {
-        tfNamaBaju.clear(); tfHargaBaju.clear(); tfStokBaju.clear();
-        tfMotifBaju.clear(); tfIdSupplierBaju.clear(); tfTambahStokBaju.clear();
-        cbUkuranBaju.setValue(null); cbKategoriBaju.setValue(null);
+        tfNamaBaju.clear();
+        tfHargaBaju.clear();
+        tfStokBaju.clear();
+        tfMotifBaju.clear();
+        tfIdSupplierBaju.clear();
+        cbUkuranBaju.setValue(null);
+        cbKategoriBaju.setValue(null);
         selectedBajuNama = null;
         tableBaju.getSelectionModel().clearSelection();
         lblPesanBaju.setText("");
     }
 
+    // ==================== CELANA HANDLERS (DENGAN BAHAN) ====================
     @FXML private void handleTambahCelana() {
         String nama = tfNamaCelana.getText();
         if (nama.trim().isEmpty()) {
-            showAlert("Peringatan", "Nama Merk Kosong", "[!] Nama merk tidak boleh kosong!", Alert.AlertType.WARNING); return;
+            showAlert("Peringatan", "Nama Merk Kosong", "[!] Nama merk tidak boleh kosong!", Alert.AlertType.WARNING);
+            return;
         }
 
         String model = tfModelCelana.getText();
         if (model.trim().isEmpty()) {
-            showAlert("Peringatan", "Model Kosong", "[!] Model tidak boleh kosong!", Alert.AlertType.WARNING); return;
+            showAlert("Peringatan", "Model Kosong", "[!] Model tidak boleh kosong!", Alert.AlertType.WARNING);
+            return;
         }
 
-        String bahan = tfBahanCelana.getText();
+        String bahan = tfBahanCelana.getText();  // ← BAHAN ADA
         if (bahan.trim().isEmpty()) {
-            showAlert("Peringatan", "Bahan Kosong", "[!] Bahan tidak boleh kosong!", Alert.AlertType.WARNING); return;
+            showAlert("Peringatan", "Bahan Kosong", "[!] Bahan tidak boleh kosong!", Alert.AlertType.WARNING);
+            return;
         }
 
         String hargaStr = tfHargaCelana.getText();
@@ -560,7 +549,8 @@ public class DashboardController {
 
     @FXML private void handleUpdateCelana() {
         if (selectedCelanaNama == null) {
-            showAlert("Peringatan", "Pilih Celana", "Pilih celana dari tabel terlebih dahulu!", Alert.AlertType.WARNING); return;
+            showAlert("Peringatan", "Pilih Celana", "Pilih celana dari tabel terlebih dahulu!", Alert.AlertType.WARNING);
+            return;
         }
 
         String hargaStr = tfHargaCelana.getText();
@@ -598,7 +588,8 @@ public class DashboardController {
 
     @FXML private void handleHapusCelana() {
         if (selectedCelanaNama == null) {
-            showAlert("Peringatan", "Pilih Celana", "Pilih celana dari tabel terlebih dahulu!", Alert.AlertType.WARNING); return;
+            showAlert("Peringatan", "Pilih Celana", "Pilih celana dari tabel terlebih dahulu!", Alert.AlertType.WARNING);
+            return;
         }
 
         boolean konfirmasi = showConfirmation("Hapus Celana",
@@ -617,32 +608,15 @@ public class DashboardController {
         }
     }
 
-    @FXML private void handleTambahStokCelana() {
-        if (selectedCelanaNama == null) {
-            showAlert("Peringatan", "Pilih Celana", "Pilih celana dari tabel terlebih dahulu!", Alert.AlertType.WARNING); return;
-        }
-        String jumlahStr = tfTambahStokCelana.getText();
-        if (jumlahStr.trim().isEmpty()) {
-            showAlert("Peringatan", "Jumlah Kosong", "[!] Masukkan jumlah tambahan stok!", Alert.AlertType.WARNING); return;
-        }
-
-        String hasil = celanaService.tambahStokCelana(selectedCelanaNama, jumlahStr);
-        setPesan(lblPesanCelana, hasil);
-
-        if (hasil.startsWith("[v]")) {
-            showAlert("Sukses", "Stok Ditambah", hasil, Alert.AlertType.INFORMATION);
-            refreshTableCelana();
-            tfTambahStokCelana.clear();
-        } else {
-            showAlert("Error", "Gagal Tambah Stok", hasil, Alert.AlertType.ERROR);
-        }
-    }
-
     @FXML private void handleClearCelana() {
-        tfNamaCelana.clear(); tfHargaCelana.clear(); tfStokCelana.clear();
-        tfModelCelana.clear(); tfBahanCelana.clear();
-        tfIdSupplierCelana.clear(); tfTambahStokCelana.clear();
-        cbUkuranCelana.setValue(null); cbKategoriCelana.setValue(null);
+        tfNamaCelana.clear();
+        tfHargaCelana.clear();
+        tfStokCelana.clear();
+        tfModelCelana.clear();
+        tfBahanCelana.clear();  // ← BAHAN ADA
+        tfIdSupplierCelana.clear();
+        cbUkuranCelana.setValue(null);
+        cbKategoriCelana.setValue(null);
         selectedCelanaNama = null;
         tableCelana.getSelectionModel().clearSelection();
         lblPesanCelana.setText("");
